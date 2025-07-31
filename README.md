@@ -13,3 +13,14 @@ A machine learning-powered solution designed to forecast crop yields based on ag
 In Short -
 ## OneAgroBharat
 ML model for crop yield prediction with Flask API, Docker, and AWS deployment
+
+
+---
+📦 Tech Stack
+### Python, scikit-learn, Flask, Docker, AWS EC2, Git, Pandas, NumPy
+
+
+---
+## Why “OneAgroBharat”?
+The name OneAgroBharat symbolizes the united vision of India contributing to global agricultural innovation through indigenous machine learning. Developed by Indian minds, this project reflects our commitment to empowering farmers with cutting-edge technology while staying rooted in our cultural identity and agricultural heritage. “One” represents unity of purpose and collaborative intelligence. “Agro” highlights the focus on agritech, and “Bharat” honors the homeland where this innovation was born.
+This name celebrates our role in shaping the future of farming—not just for India, but for the world.
