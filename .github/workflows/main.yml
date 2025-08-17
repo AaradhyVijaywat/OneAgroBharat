@@ -1,12 +1,12 @@
-name: Docker Build and Deploy
+name: build-and-deploy
 
 on:
   push:
     branches:
-      - main  # or your deployment branch
+      - main   # or master
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,8 +23,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
-          tags: sghs/crop_yield:latest
+          tags: your-dockerhub-username/your-image-name:latest
