@@ -1,16 +1,16 @@
-name: Build & Push Docker image
+name: Build and Deploy
 
 on:
   push:
-    branches: [ "main" ]   # runs when you push to main branch
-  workflow_dispatch:        # allows manual trigger
+    branches:
+      - main   # or master, depending on your repo
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
