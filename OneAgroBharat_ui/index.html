@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>OneAgroBharat - Crop Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body { padding-top: 20px; background-color: #f8fafc; }
+      .card { box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+      select.scrollable { height: 160px; overflow-y: scroll; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mb-3">🌾 OneAgroBharat - Crop Prediction</h1>
+
+      <!-- status -->
+      <div class="mb-3">
+        <span class="badge bg-info">Model: {{ 'Loaded' if model_loaded else 'Missing' }}</span>
+        <span class="badge bg-secondary">Preprocessor: {{ 'Loaded' if preprocessor_loaded else 'Handled in app' }}</span>
+        <span class="badge bg-success">Dataset: {{ 'Found' if dataset_loaded else 'Missing' }}</span>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card p-3 mb-3">
+            <h5>Single Prediction</h5>
+            <form id="predictForm" method="post" action="/predict" onsubmit="return validateForm();">
+              <div id="fieldsContainer">
+                {% for f in fields %}
+                  <div class="mb-2">
+                    <label class="form-label">{{ f.name }}</label>
+                    {% if f.type == 'categorical' %}
+                      <select name="{{ f.name }}" class="form-select scrollable" required>
+                        {% for opt in f.options %}
+                          <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                      </select>
+                    {% else %}
+                      <input type="number" step="any" name="{{ f.name }}" class="form-control" value="{{ f.default }}" required>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+
+              <button type="submit" class="btn btn-primary">Predict</button>
+            </form>
+
+            {% if prediction is defined %}
+              <div class="mt-3 alert alert-success">
+                <h5>THE CROP YIELD FOR THE YEAR PER UNIT AREA (E.G., PER HECTARE OR ACRE) = {{ prediction }}</h5>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="card p-3">
+            <h5>Batch Prediction (CSV)</h5>
+            <form id="batchForm" method="post" action="/batch_predict" enctype="multipart/form-data">
+              <div class="mb-2">
+                <input type="file" name="file" accept=".csv" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn-outline-secondary">Upload & Predict (Download CSV)</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card p-3">
+            <h5>Dataset Preview</h5>
+            {% if dataset_loaded %}
+              <div style="max-height:480px; overflow:auto;">
+                <pre>{{ (DF.head(20) | safe) if DF is defined else "" }}</pre>
+              </div>
+            {% else %}
+              <div class="text-muted">No dataset loaded (yield_df.csv not found)</div>
+            {% endif %}
+          </div>
+
+          <div class="card p-3 mt-3">
+            <h5>Notes</h5>
+            <ul>
+              <li>The app will encode categorical values automatically from your CSV.</li>
+              <li>If you used a different encoding when training, please save and provide the preprocessor (preprocessor.pkl.gz) or retrain as a full pipeline.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function validateForm() {
+        // basic client-side validation: required inputs & positive numbers for "Area" if present
+        const form = document.getElementById("predictForm");
+        let valid = true;
+        // check numeric fields for NaN or empty
+        const nums = form.querySelectorAll('input[type="number"]');
+        nums.forEach(function(inp) {
+          const v = parseFloat(inp.value);
+          if (isNaN(v)) {
+            alert("Please enter valid numeric values.");
+            valid = false;
+          }
+          // if field label is area (case-insensitive), require >0
+          const labelText = inp.previousElementSibling ? inp.previousElementSibling.innerText.toLowerCase() : "";
+          if (labelText.includes('area') && v <= 0) {
+            alert("Area must be a positive number.");
+            valid = false;
+          }
+        });
+        return valid;
+      }
+    </script>
+  </body>
+</html>
