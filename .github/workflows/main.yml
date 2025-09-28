@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main   # or master, depending on your repo
+      - main  # or master, depending on your repo
 
 jobs:
   build-and-deploy:
@@ -28,3 +28,4 @@ jobs:
           context: .
           push: true
           tags: aaradhyvijaywat/app:latest
+          platforms: linux/amd64
